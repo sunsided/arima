@@ -61,16 +61,31 @@ xlabel('t [s]');
 ylabel('signal');
 grid on;
 
+% adjust for zero-lag element
+acf = acf(1:end-1);
+pacf = pacf(1:end-1);
+
+% determine the confidence intervals for the ACF
+confidence_interval = 1.96/sqrt(N);
+in_confidence = abs(acf) >= confidence_interval;
+out_confidence = ~in_confidence;
+
 subplot(3,1,2);
-stem(t,acf(1:end-1), 'LineWidth', 2); hold on;
+stem(t(out_confidence),acf(out_confidence), 'LineWidth', 2, 'Color', [0.7 0.7 1]); hold on;
+stem(t(in_confidence),acf(in_confidence), 'LineWidth', 2); hold on;
 %stem(t,acf_sys, 'r:', 'LineWidth', 2)
 title('autocorrelation (ACF)');
 xlabel('lag [s]');
 ylabel('coefficient')
 grid on;
 
+% determine the confidence intervals for the PACF
+in_confidence = abs(pacf) >= confidence_interval;
+out_confidence = ~in_confidence;
+
 subplot(3,1,3);
-stem(t, pacf(1:end-1), 'LineWidth', 2); hold on;
+stem(t(out_confidence),pacf(out_confidence), 'LineWidth', 2, 'Color', [0.7 0.7 1]); hold on;
+stem(t(in_confidence),pacf(in_confidence), 'LineWidth', 2); hold on;
 %stem(t, pacf_sys, 'r:', 'LineWidth', 2)
 title('partial autocorrelation (PACF)');
 xlabel('lag [s]');

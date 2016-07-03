@@ -62,6 +62,7 @@ grid on;
 
 % adjust for zero-lag element
 acf = acf(1:end-1);
+pacf = pacf(1:end-1);
 
 % determine the confidence intervals for the ACF
 confidence_interval = 1.96/sqrt(N);
@@ -78,7 +79,6 @@ ylabel('coefficient')
 grid on;
 
 % determine the confidence intervals for the PACF
-pacf = pacf(1:end-1);
 in_confidence = abs(pacf) >= confidence_interval;
 out_confidence = ~in_confidence;
 
