@@ -1,4 +1,4 @@
-% signal_gen
+clear all;
 
 % http://people.brandeis.edu/~pmherb/MatlabBootCamp/simulatingdata.html
 

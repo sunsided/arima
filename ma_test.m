@@ -1,4 +1,4 @@
-% signal_gen
+clear all;
 
 % http://people.brandeis.edu/~pmherb/MatlabBootCamp/simulatingdata.html
 
@@ -20,7 +20,7 @@ sigma = 1;
 shocks = sigma*randn(size(t));
 
 y = nan(size(t));
-y(1) = mean + shocks(i);
+y(1) = mean + shocks(1);
 for i=2:numel(t)
     y(i) = mean;
     for lag=1:numel(theta)
