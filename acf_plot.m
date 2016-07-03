@@ -1,10 +1,12 @@
 signal_gen
 
+% determine the autocorrelation
 acf = []
 for i=x
     acf = [acf; my_corr(y,y,i)];
 end
 
+% check against the MATLAB function
 acf_sys = xcorr(y, N, 'coeff');
 acf_sys = acf_sys(N+1:end-1);
 
