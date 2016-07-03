@@ -14,6 +14,9 @@ x = 1:numel(t);
 % AR(2)
 phi = [0.7 0.2];
 
+% AR(?)
+%phi = [1 0.2 -0.5];
+
 ar_degree = numel(phi);
 
 mean = -42;
