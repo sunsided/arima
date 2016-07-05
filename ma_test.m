@@ -72,8 +72,8 @@ in_confidence = abs(acf) >= confidence_interval;
 out_confidence = ~in_confidence;
 
 subplot(3,1,2);
-stem(x(out_confidence),acf(out_confidence), 'LineWidth', 2, 'Color', [0.7 0.7 1]); hold on;
-stem(x(in_confidence),acf(in_confidence), 'LineWidth', 2); hold on;
+stem(x(out_confidence),acf(out_confidence), 'LineWidth', 1, 'Color', [0.7 0.7 1]); hold on;
+stem(x(in_confidence),acf(in_confidence), 'filled', 'LineWidth', 1); hold on;
 %stem(t,acf_sys, 'r:', 'LineWidth', 2)
 title('autocorrelation (ACF)');
 xlabel('lag');
@@ -86,8 +86,8 @@ in_confidence = abs(pacf) >= confidence_interval;
 out_confidence = ~in_confidence;
 
 subplot(3,1,3);
-stem(x(out_confidence),pacf(out_confidence), 'LineWidth', 2, 'Color', [0.7 0.7 1]); hold on;
-stem(x(in_confidence),pacf(in_confidence), 'LineWidth', 2); hold on;
+stem(x(out_confidence),pacf(out_confidence), 'LineWidth', 1, 'Color', [0.7 0.7 1]); hold on;
+stem(x(in_confidence),pacf(in_confidence), 'filled', 'LineWidth', 1); hold on;
 %stem(t, pacf_sys, 'r:', 'LineWidth', 2)
 title('partial autocorrelation (PACF)');
 xlabel('lag');
