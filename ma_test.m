@@ -3,7 +3,7 @@ clear all;
 % http://people.brandeis.edu/~pmherb/MatlabBootCamp/simulatingdata.html
 
 t_max = 2;
-N = 100;
+N = 200;
 
 t = linspace(0, t_max, N);
 x = 0:numel(t);
@@ -12,8 +12,7 @@ x = 0:numel(t);
 %theta = [0.8];
 
 % MA(2) -- https://onlinecourses.science.psu.edu/stat510/node/48
-theta = [1 0.7];
-
+theta = [0.5 0.3];
 ma_degree = numel(theta);
 
 mean = -42;
@@ -24,15 +23,14 @@ sigma = 1;
 shocks = sigma*randn(size(t));
 
 y = nan(size(t));
-y(1) = mean + shocks(1);
-for i=2:numel(t)
-    y(i) = mean;
+for i=1:numel(t)
+    y(i) = mean + shocks(i);
     for lag=1:numel(theta)
         lagged_shocks = 0;
         if i-lag > 0
             lagged_shocks = shocks(i-lag);
         end
-        y(i) = y(i) + theta(lag)*lagged_shocks + shocks(i);
+        y(i) = y(i) + theta(lag)*lagged_shocks;
     end
 end
 
@@ -80,6 +78,7 @@ stem(x(in_confidence),acf(in_confidence), 'LineWidth', 2); hold on;
 title('autocorrelation (ACF)');
 xlabel('lag');
 ylabel('coefficient')
+ylim([-1 1]);
 grid on;
 
 % determine the confidence intervals for the PACF
@@ -93,4 +92,5 @@ stem(x(in_confidence),pacf(in_confidence), 'LineWidth', 2); hold on;
 title('partial autocorrelation (PACF)');
 xlabel('lag');
 ylabel('coefficient')
+ylim([-1 1]);
 grid on;
