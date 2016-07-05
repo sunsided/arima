@@ -6,25 +6,24 @@ t_max = 2;
 N = 100;
 
 t = linspace(0, t_max, N);
-x = 1:numel(t);
+x = 0:numel(t);
 
 % AR(1) / random walk
-%phi = [1];
+phi = [0.7];
 
 % AR(2)
-phi = [0.7 0.2];
+%phi = [0.5 0.1];
 
 % AR(?)
 %phi = [1 0.2 -0.5];
 
 ar_degree = numel(phi);
 
-mean = -42;
 num_differentiations = 0;
 sigma = 1;
 
 y = nan(size(t));
-y(1) = mean;
+y(1) = sigma*randn(1);
 for i=2:numel(t)
     y(i) = sigma*randn(1);
     for lag=1:numel(phi)
@@ -41,7 +40,7 @@ for d=1:num_differentiations
 end
 
 % determine the autocorrelation
-acf = [1];
+acf = [];
 for i=x
     acf = [acf; my_corr(y,y,i)];
 end
@@ -74,12 +73,13 @@ in_confidence = abs(acf) >= confidence_interval;
 out_confidence = ~in_confidence;
 
 subplot(3,1,2);
-stem(t(out_confidence),acf(out_confidence), 'LineWidth', 2, 'Color', [0.7 0.7 1]); hold on;
-stem(t(in_confidence),acf(in_confidence), 'LineWidth', 2); hold on;
+stem(x(out_confidence),acf(out_confidence), 'LineWidth', 2, 'Color', [0.7 0.7 1]); hold on;
+stem(x(in_confidence),acf(in_confidence), 'LineWidth', 2); hold on;
 %stem(t,acf_sys, 'r:', 'LineWidth', 2)
 title('autocorrelation (ACF)');
-xlabel('lag [s]');
+xlabel('lag');
 ylabel('coefficient')
+ylim([-1 1]);
 grid on;
 
 % determine the confidence intervals for the PACF
@@ -87,10 +87,11 @@ in_confidence = abs(pacf) >= confidence_interval;
 out_confidence = ~in_confidence;
 
 subplot(3,1,3);
-stem(t(out_confidence),pacf(out_confidence), 'LineWidth', 2, 'Color', [0.7 0.7 1]); hold on;
-stem(t(in_confidence),pacf(in_confidence), 'LineWidth', 2); hold on;
+stem(x(out_confidence),pacf(out_confidence), 'LineWidth', 2, 'Color', [0.7 0.7 1]); hold on;
+stem(x(in_confidence),pacf(in_confidence), 'LineWidth', 2); hold on;
 %stem(t, pacf_sys, 'r:', 'LineWidth', 2)
 title('partial autocorrelation (PACF)');
-xlabel('lag [s]');
+xlabel('lag');
 ylabel('coefficient')
+ylim([-1 1]);
 grid on;

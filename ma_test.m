@@ -3,7 +3,7 @@ clear all;
 % http://people.brandeis.edu/~pmherb/MatlabBootCamp/simulatingdata.html
 
 t_max = 2;
-N = 200;
+N = 100;
 
 t = linspace(0, t_max, N);
 x = 0:numel(t);
@@ -15,7 +15,7 @@ x = 0:numel(t);
 theta = [0.5 0.3];
 ma_degree = numel(theta);
 
-mean = -42;
+mean = 10;
 num_differentiations = 0;
 sigma = 1;
 
@@ -41,7 +41,7 @@ end
 % determine the autocorrelation
 acf = [];
 for i=x
-    acf = [acf; my_corr(y,y,i)];
+    acf = [acf; my_corr(y,y,i,mean,mean)];
 end
 
 % determine the partial autocorrelation
