@@ -21,6 +21,18 @@ function [ rho ] = my_corr( x, y, lag, my_x, my_y, sigma_x, sigma_y )
         lag = 0;
     end
     
+    lags = numel(lag);
+    if lags > 1
+       
+        rho_arr = nan(1, lags);
+        for i=1:lags
+            rho_arr(i) = my_corr(x, y, i-1, my_x, my_y, sigma_x, sigma_y);
+        end
+        
+        rho = rho_arr;
+        return
+    end
+    
     % The number of elements must match
     N = numel(x);
     assert(N == numel(y));
@@ -37,8 +49,8 @@ function [ rho ] = my_corr( x, y, lag, my_x, my_y, sigma_x, sigma_y )
         y_error = y_error';
     end
     
-    phi = (x_error * y_error') / (N-1);
-    rho = phi / (sigma_x*sigma_y);
+    phi = (x_error * y_error) / (N-1);
+    rho = phi / (sigma_x*sigma_y);    
     
 end
 
