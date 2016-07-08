@@ -42,12 +42,24 @@ dacf = my_corr(double(d_passengers), double(d_passengers), lags);
 pacf = my_pacf(double(passengers), N);
 dpacf = my_pacf(double(d_passengers), N);
 
-% confidence bands for 95% confidence of the null hypothesis 
-% (i.e. no correlation)
-ACF_conf_x  = [lags, fliplr(lags)];
-ACF_conf_y  = [ones(1, numel(lags))*1.96/sqrt(N), fliplr(-ones(1, numel(lags)))*1.96/sqrt(N)];
+% confidence bands for 95% confidence of the null hypothesis (i.e. no correlation)
+% https://en.wikipedia.org/wiki/Correlogram
+% https://en.wikipedia.org/wiki/1.96
 PACF_conf_x = [lags(1:MAX_DISPLAYED_PACF_LAGS+1), fliplr(lags(1:MAX_DISPLAYED_PACF_LAGS+1))];
 PACF_conf_y = [ones(1,MAX_DISPLAYED_PACF_LAGS+1)*1.96/sqrt(N), fliplr(-ones(1,MAX_DISPLAYED_PACF_LAGS+1))*1.96/sqrt(N)];
+
+% confidence bands for 95% confidence of the null hypothesis (i.e. no correlation)
+% the ACF confidence bands are using the Bartlett approximation describe on
+% https://en.wikipedia.org/wiki/Correlogram
+bartlett_conf = zeros(1, N);
+acf_squared = acf.^2;
+for i=1:N
+    bartlett_conf(i+1) = 1.96*sqrt( (1 + 2*sum(acf_squared(2:i))) / N);
+end
+
+ACF_conf_x  = [lags, fliplr(lags)];
+%ACF_conf_y  = [ones(1, numel(lags))*1.96/sqrt(N), fliplr(-ones(1, numel(lags)))*1.96/sqrt(N)];
+ACF_conf_y  = [bartlett_conf, fliplr(-bartlett_conf)];
 
 figure;
 subplot(2,2,1);
@@ -58,7 +70,7 @@ ylabel('\rho( k)')
 xlim([0 N]);
 
 hold on 
-fill(ACF_conf_x, ACF_conf_y, 1,....
+fill(ACF_conf_x, ACF_conf_y, 1,...
         'FaceColor', [0 0 0], ...
         'EdgeColor', 'none', ...
         'FaceAlpha', 0.1);
