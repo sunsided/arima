@@ -1,4 +1,5 @@
 % attempting to follow the StackExchange answer http://stats.stackexchange.com/a/9017/26843
+% and http://stats.stackexchange.com/questions/106038/estimate-arma-coefficients-through-acf-and-pacf-inspection/106050#106050
 
 clear all;
 close all;
@@ -19,23 +20,7 @@ clear fileID A;
 
 N = numel(passengers);
 
-% differentiate once
 d_passengers = [0; diff(passengers)];
-
-% simple plot
-
-figure;
-subplot(2,1,1);
-plot(passengers);
-xlabel('month');
-ylabel('c(t) \cdot 10^{-3}');
-title('airline passengers');
-
-subplot(2,1,2);
-plot(d_passengers);
-xlabel('month');
-ylabel('\Deltac(t) \cdot 10^{-3}');
-title('change of airline passengers');
 
 lags = 0:MAX_DISPLAYED_LAGS;
 acf = my_corr(passengers, passengers, lags);
@@ -60,8 +45,47 @@ for i=1:MAX_DISPLAYED_LAGS
 end
 
 ACF_conf_x  = [lags, fliplr(lags)];
-%ACF_conf_y  = [ones(1, numel(lags))*1.96/sqrt(N), fliplr(-ones(1, numel(lags)))*1.96/sqrt(N)];
 ACF_conf_y  = [bartlett_conf, fliplr(-bartlett_conf)];
+
+% calculate the autocorrelation's standard error
+acf_stderr = zeros(1, MAX_DISPLAYED_LAGS+1);
+acf_stderr(1) = nan;
+acf_stderr(2) = 1/sqrt(N);
+for h=3:MAX_DISPLAYED_LAGS+1
+    % note that the formula actually states acf_squared(1:(h-1))
+    % which does not work due to Matlabs iffy vector indexing.
+    acf_stderr(h) = sqrt( (1 + 2*sum(acf_squared(2:(h-1)))) / N);
+end
+
+% calculate the t-statistic
+% https://en.wikipedia.org/wiki/T-statistic
+% https://sawtoothsoftware.com/forum/4708/how-to-interpret-the-t-ratio
+% --> an absolute t-ratio larger than 1.96 suggests a statistically
+%     significant difference from (beta-) 0 at the 95% confidence level.
+ratio = acf ./ acf_stderr;
+
+% plots
+
+figure;
+subplot(2,1,1);
+plot(passengers);
+xlabel('month');
+ylabel('c(t) \cdot 10^{-3}');
+title('airline passengers');
+
+subplot(2,1,2);
+plot(d_passengers);
+xlabel('month');
+ylabel('\Deltac(t) \cdot 10^{-3}');
+title('change of airline passengers');
+
+% The autocorrelogram of the original time series decays very slowly,
+% indicating that the series might be integrated (i.e. nonstationary).
+% There is a strong autocorrelation of 0.948 at lag 1, as well
+% as a strong autocorrelation of 0.76 at lag 12, both (and indeed
+% all up to lag 15) above the confidence interval of the null hypothesis.
+% The latter means the series is clearly autocorrelated, while the
+% spike at lag 12 suggest seasonality of 12 lags (i.e. months).
 
 figure;
 subplot(2,2,1);
