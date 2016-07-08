@@ -13,7 +13,7 @@ fclose(fileID);
 
 years = A{1};
 months = A{2};
-passengers = A{3};
+passengers = double(A{3});
 
 clear fileID A;
 
@@ -38,11 +38,11 @@ ylabel('\Deltac(t) \cdot 10^{-3}');
 title('change of airline passengers');
 
 lags = 0:MAX_DISPLAYED_LAGS;
-acf = my_corr(double(passengers), double(passengers), lags);
-dacf = my_corr(double(d_passengers), double(d_passengers), lags);
+acf = my_corr(passengers, passengers, lags);
+dacf = my_corr(d_passengers, d_passengers, lags);
 
-pacf = my_pacf(double(passengers), MAX_DISPLAYED_LAGS);
-dpacf = my_pacf(double(d_passengers), MAX_DISPLAYED_LAGS);
+pacf = my_pacf(passengers, MAX_DISPLAYED_LAGS);
+dpacf = my_pacf(d_passengers, MAX_DISPLAYED_LAGS);
 
 % confidence bands for 95% confidence of the null hypothesis (i.e. no correlation)
 % https://en.wikipedia.org/wiki/Correlogram
