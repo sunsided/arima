@@ -41,15 +41,17 @@ bartlett_conf = bartlett_confidence(acf, MAX_DISPLAYED_LAGS, N);
 ACF_conf_x  = [lags, fliplr(lags)];
 ACF_conf_y  = [bartlett_conf, fliplr(-bartlett_conf)];
 
-% calculate the autocorrelation's standard error
-acf_stderr = standard_error(acf, MAX_DISPLAYED_LAGS, N);
-
 % calculate the t-statistic
 % https://en.wikipedia.org/wiki/T-statistic
 % https://sawtoothsoftware.com/forum/4708/how-to-interpret-the-t-ratio
 % --> an absolute t-ratio larger than 1.96 suggests a statistically
 %     significant difference from (beta-) 0 at the 95% confidence level.
+acf_stderr = standard_error(acf, MAX_DISPLAYED_LAGS, N);
 acf_ratio = acf ./ acf_stderr;
+
+% calculate the t-statistic of the differentiated series
+dacf_stderr = standard_error(dacf, MAX_DISPLAYED_LAGS, N);
+dacf_ratio = dacf ./ dacf_stderr;
 
 % plots
 
