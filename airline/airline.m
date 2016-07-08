@@ -36,33 +36,20 @@ PACF_conf_x = [lags, fliplr(lags)];
 PACF_conf_y = [ones(size(lags))*1.96/sqrt(N), fliplr(-ones(size(lags)))*1.96/sqrt(N)];
 
 % confidence bands for 95% confidence of the null hypothesis (i.e. no correlation)
-% the ACF confidence bands are using the Bartlett approximation describe on
-% https://en.wikipedia.org/wiki/Correlogram
-bartlett_conf = zeros(1, MAX_DISPLAYED_LAGS+1);
-acf_squared = acf.^2;
-for i=1:MAX_DISPLAYED_LAGS
-    bartlett_conf(i+1) = 1.96*sqrt( (1 + 2*sum(acf_squared(2:i))) / N);
-end
+bartlett_conf = bartlett_confidence(acf, MAX_DISPLAYED_LAGS, N);
 
 ACF_conf_x  = [lags, fliplr(lags)];
 ACF_conf_y  = [bartlett_conf, fliplr(-bartlett_conf)];
 
 % calculate the autocorrelation's standard error
-acf_stderr = zeros(1, MAX_DISPLAYED_LAGS+1);
-acf_stderr(1) = nan;
-acf_stderr(2) = 1/sqrt(N);
-for h=3:MAX_DISPLAYED_LAGS+1
-    % note that the formula actually states acf_squared(1:(h-1))
-    % which does not work due to Matlabs iffy vector indexing.
-    acf_stderr(h) = sqrt( (1 + 2*sum(acf_squared(2:(h-1)))) / N);
-end
+acf_stderr = standard_error(acf, MAX_DISPLAYED_LAGS, N);
 
 % calculate the t-statistic
 % https://en.wikipedia.org/wiki/T-statistic
 % https://sawtoothsoftware.com/forum/4708/how-to-interpret-the-t-ratio
 % --> an absolute t-ratio larger than 1.96 suggests a statistically
 %     significant difference from (beta-) 0 at the 95% confidence level.
-ratio = acf ./ acf_stderr;
+acf_ratio = acf ./ acf_stderr;
 
 % plots
 
