@@ -53,8 +53,6 @@ acf_ratio = (acf - 0) ./ acf_stderr;
 dacf_stderr = standard_error(dacf, MAX_DISPLAYED_LAGS, N);
 dacf_ratio = (dacf - 0) ./ dacf_stderr;
 
-lel = parcorr(passengers, MAX_DISPLAYED_LAGS);
-
 % plots
 
 figure;

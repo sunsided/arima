@@ -14,10 +14,35 @@ function [pi] = my_pacf(x, max_lags)
     if ~exist('max_lags', 'var')
         max_lags = numel(x);
     end
+
+
+    % 
+    % Create a lagged regression matrix & allocate storage for the partial ACF. 
+    % 
+
+    X  =  lagmatrix(x , [1:max_lags]); 
+    pi =  [1 ; zeros(max_lags , 1)]; 
+
+    % 
+    % Compute partial ACF by fitting successive order AR models  
+    % by OLS, retaining the last coefficient of each regression. 
+    % 
+
+    for order = 1:max_lags
+        column_of_ones = ones(length(x)-order, 1);
+        A           = [column_of_ones  X(order+1:end, 1:order)];
+        [Q , R]     =  qr(A , 0); 
+        b           =  R \ (Q' * x(order+1:end)); 
+        pi(order+1) =  b(end); 
+    end 
+    
+    return;
+
+    %{
     
     acf  = nan(max_lags);
     pacf = nan(max_lags, max_lags);
-
+    
     % pre-calculate the autocorrelation values (rho)
     for p=1:max_lags
         acf(p) = my_corr(x, x, p);
@@ -53,4 +78,6 @@ function [pi] = my_pacf(x, max_lags)
 
     pi = [1 diag(pacf)'];
 
+    %}
+    
 end
