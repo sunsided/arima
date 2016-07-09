@@ -5,7 +5,7 @@ clear all;
 close all;
 addpath '..';
 
-MAX_DISPLAYED_LAGS=40;
+MAX_DISPLAYED_LAGS=144;
 
 % read in the airline series
 fileID = fopen('international-airline-passengers.csv', 'r');
@@ -22,12 +22,26 @@ N = numel(passengers);
 
 d_passengers = [0; diff(passengers)];
 
+% also apply seasonal differencing
+dd12_passengers = zeros(N, 1);
+for i=1:12
+    %dd12_passengers(i) = passengers(i-1) - passengers(i);
+    dd12_passengers(i) = passengers(i) - passengers(1);
+end
+for i=13:N
+    %dd12_passengers(i) = passengers(i-12) - passengers(i-1) - passengers(i);
+    dd12_passengers(i) = passengers(i) - passengers(i-12);
+end
+dd12_passengers = [0; diff(dd12_passengers)];
+
 lags = 0:MAX_DISPLAYED_LAGS;
 acf = my_corr(passengers, passengers, lags);
 dacf = my_corr(d_passengers, d_passengers, lags);
+dd12acf = my_corr(dd12_passengers, dd12_passengers, lags);
 
 pacf = my_pacf(passengers, MAX_DISPLAYED_LAGS);
 dpacf = my_pacf(d_passengers, MAX_DISPLAYED_LAGS);
+dd12pacf = my_pacf(dd12_passengers, MAX_DISPLAYED_LAGS);
 
 % confidence bands for 95% confidence of the null hypothesis (i.e. no correlation)
 % https://en.wikipedia.org/wiki/Correlogram
@@ -37,9 +51,16 @@ PACF_conf_y = [ones(size(lags))*1.96/sqrt(N), fliplr(-ones(size(lags)))*1.96/sqr
 
 % confidence bands for 95% confidence of the null hypothesis (i.e. no correlation)
 bartlett_conf = bartlett_confidence(acf, MAX_DISPLAYED_LAGS, N);
-
 ACF_conf_x  = [lags, fliplr(lags)];
 ACF_conf_y  = [bartlett_conf, fliplr(-bartlett_conf)];
+
+bartlett_conf = bartlett_confidence(dacf, MAX_DISPLAYED_LAGS, N);
+DACF_conf_x  = [lags, fliplr(lags)];
+DACF_conf_y  = [bartlett_conf, fliplr(-bartlett_conf)];
+
+bartlett_conf = bartlett_confidence(dd12acf, MAX_DISPLAYED_LAGS, N);
+DD12ACF_conf_x  = [lags, fliplr(lags)];
+DD12ACF_conf_y  = [bartlett_conf, fliplr(-bartlett_conf)];
 
 % calculate the t-statistic
 % https://en.wikipedia.org/wiki/T-statistic
@@ -119,7 +140,7 @@ ylabel('\rho( k)')
 xlim([0 MAX_DISPLAYED_LAGS]);
 
 hold on 
-fill(ACF_conf_x, ACF_conf_y, 1,....
+fill(DACF_conf_x, ACF_conf_y, 1,....
         'FaceColor', [0 0 0], ...
         'EdgeColor', 'none', ...
         'FaceAlpha', 0.1);
@@ -127,6 +148,43 @@ set(gca, 'children', flipud(get(gca, 'children')));
 
 subplot(2,2,4);
 stem(lags(1:MAX_DISPLAYED_LAGS), dpacf(1:MAX_DISPLAYED_LAGS), ':o', 'filled', 'MarkerSize', 3);
+title('Sample PACF \Deltac(t)');
+xlabel('lag k')
+ylabel('\pi(k)')
+xlim([0 MAX_DISPLAYED_LAGS]);
+
+hold on 
+fill(PACF_conf_x, PACF_conf_y, 1,....
+        'FaceColor', [0 0 0], ...
+        'EdgeColor', 'none', ...
+        'FaceAlpha', 0.1);
+set(gca, 'children', flipud(get(gca, 'children')));
+
+figure;
+
+subplot(3,1,1);
+plot(dd12_passengers);
+title('\Delta\Delta_{12}c(t) (Residuals)');
+xlabel('month')
+ylabel('\Delta\Delta_{12} c(t) \cdot 10^{-3}')
+xlim([0 MAX_DISPLAYED_LAGS]);
+
+subplot(3,1,2);
+stem(lags, dd12acf, ':o', 'filled', 'MarkerSize', 3);
+title('Sample ACF \Deltac(t)');
+xlabel('lag')
+ylabel('\rho( k)')
+xlim([0 MAX_DISPLAYED_LAGS]);
+
+hold on 
+fill(DD12ACF_conf_x, ACF_conf_y, 1,....
+        'FaceColor', [0 0 0], ...
+        'EdgeColor', 'none', ...
+        'FaceAlpha', 0.1);
+set(gca, 'children', flipud(get(gca, 'children')));
+
+subplot(3,1,3);
+stem(lags(1:MAX_DISPLAYED_LAGS), dd12pacf(1:MAX_DISPLAYED_LAGS), ':o', 'filled', 'MarkerSize', 3);
 title('Sample PACF \Deltac(t)');
 xlabel('lag k')
 ylabel('\pi(k)')
