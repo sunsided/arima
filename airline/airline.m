@@ -24,12 +24,7 @@ d_passengers = [0; diff(passengers)];
 
 % also apply seasonal differencing
 dd12_passengers = zeros(N, 1);
-for i=1:12
-    %dd12_passengers(i) = passengers(i-1) - passengers(i);
-    dd12_passengers(i) = passengers(i) - passengers(1);
-end
 for i=13:N
-    %dd12_passengers(i) = passengers(i-12) - passengers(i-1) - passengers(i);
     dd12_passengers(i) = passengers(i) - passengers(i-12);
 end
 dd12_passengers = [0; diff(dd12_passengers)];
@@ -171,7 +166,7 @@ xlim([0 MAX_DISPLAYED_LAGS]);
 
 subplot(3,1,2);
 stem(lags, dd12acf, ':o', 'filled', 'MarkerSize', 3);
-title('Sample ACF \Deltac(t)');
+title('Sample ACF \Delta\Delta_{12}c(t)');
 xlabel('lag')
 ylabel('\rho( k)')
 xlim([0 MAX_DISPLAYED_LAGS]);
@@ -185,7 +180,7 @@ set(gca, 'children', flipud(get(gca, 'children')));
 
 subplot(3,1,3);
 stem(lags(1:MAX_DISPLAYED_LAGS), dd12pacf(1:MAX_DISPLAYED_LAGS), ':o', 'filled', 'MarkerSize', 3);
-title('Sample PACF \Deltac(t)');
+title('Sample PACF \Delta\Delta_{12}c(t)');
 xlabel('lag k')
 ylabel('\pi(k)')
 xlim([0 MAX_DISPLAYED_LAGS]);
