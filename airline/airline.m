@@ -45,13 +45,15 @@ ACF_conf_y  = [bartlett_conf, fliplr(-bartlett_conf)];
 % https://en.wikipedia.org/wiki/T-statistic
 % https://sawtoothsoftware.com/forum/4708/how-to-interpret-the-t-ratio
 % --> an absolute t-ratio larger than 1.96 suggests a statistically
-%     significant difference from (beta-) 0 at the 95% confidence level.
+%     significant difference from 0 at the 95% confidence level.
 acf_stderr = standard_error(acf, MAX_DISPLAYED_LAGS, N);
-acf_ratio = acf ./ acf_stderr;
+acf_ratio = (acf - 0) ./ acf_stderr;
 
 % calculate the t-statistic of the differentiated series
 dacf_stderr = standard_error(dacf, MAX_DISPLAYED_LAGS, N);
-dacf_ratio = dacf ./ dacf_stderr;
+dacf_ratio = (dacf - 0) ./ dacf_stderr;
+
+lel = parcorr(passengers, MAX_DISPLAYED_LAGS);
 
 % plots
 
@@ -97,7 +99,7 @@ subplot(2,2,3);
 stem(lags(1:MAX_DISPLAYED_LAGS), pacf(1:MAX_DISPLAYED_LAGS), ':o', 'filled', 'MarkerSize', 3);
 title('Sample PACF c(t)');
 xlabel('lag k')
-ylabel('\alpha(k)')
+ylabel('\pi(k)')
 xlim([0 MAX_DISPLAYED_LAGS]);
 
 hold on 
@@ -129,7 +131,7 @@ subplot(2,2,4);
 stem(lags(1:MAX_DISPLAYED_LAGS), dpacf(1:MAX_DISPLAYED_LAGS), ':o', 'filled', 'MarkerSize', 3);
 title('Sample PACF \Deltac(t)');
 xlabel('lag k')
-ylabel('\alpha(k)')
+ylabel('\pi(k)')
 xlim([0 MAX_DISPLAYED_LAGS]);
 
 hold on 
