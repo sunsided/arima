@@ -49,7 +49,7 @@ function [ rho ] = my_corr( x, y, lag, my_x, my_y, sigma_x, sigma_y )
         y_error = y_error';
     end
     
-    phi = (x_error * y_error) / (N-1);
+    phi = (x_error * y_error') / (N-1);
     rho = phi / (sigma_x*sigma_y);    
     
 end
