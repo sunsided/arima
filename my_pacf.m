@@ -28,17 +28,17 @@ function [pi] = my_pacf(x, max_lags)
     % by OLS, retaining the last coefficient of each regression. 
     % 
 
+    %{
     for order = 1:max_lags
         column_of_ones = ones(length(x)-order, 1);
         A           = [column_of_ones  X(order+1:end, 1:order)];
         [Q , R]     =  qr(A , 0); 
-        b           =  R \ (Q' * x(order+1:end)); 
+        b           =  R \ (Q' * x(order+1:end)'); 
         pi(order+1) =  b(end); 
     end 
     
     return;
-
-    %{
+    %}
     
     acf  = nan(max_lags);
     pacf = nan(max_lags, max_lags);
@@ -78,6 +78,4 @@ function [pi] = my_pacf(x, max_lags)
 
     pi = [1 diag(pacf)'];
 
-    %}
-    
 end
